@@ -1,0 +1,46 @@
+{% extends 'account/base.html' %}
+
+{% block content %}
+<!-- Page Title -->
+<div class="page-title position-relative">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">User Registration Form</h1>
+        <nav class="breadcrumbs">
+            <ol>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li class="current">Register</li>
+            </ol>
+        </nav>
+    </div>
+</div><!-- End Page Title -->
+
+<div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-7">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <p>{{ form.username.label_tag }} {{ form.username }} {{ form.username.help_text }} {{ form.username.errors }}</p>
+                <p>{{ form.email.label_tag }} {{ form.email }} {{ form.email.help_text }} {{ form.email.errors }}</p>
+                <p>{{ form.password1.label_tag }} {{ form.password1 }} {{ form.password1.help_text }} {{ form.password1.errors }}</p>
+                <p>{{ form.password2.label_tag }} {{ form.password2 }} {{ form.password2.help_text }} {{ form.password2.errors }}</p>
+                <p>{{ form.role.label_tag }} {{ form.role }} {{ form.role.errors }}</p>
+
+                <div id="writer-fields" style="display: none;">
+                    <p>{{ form.full_name.label_tag }} {{ form.full_name }} {{ form.full_name.help_text }} {{ form.full_name.errors }}</p>
+                    <p>{{ form.bio.label_tag }} {{ form.bio }} {{ form.bio.help_text }} {{ form.bio.errors }}</p>
+                    <p>{{ form.profile_picture.label_tag }} {{ form.profile_picture }} {{ form.profile_picture.help_text }} {{ form.profile_picture.errors }}</p>
+                    <p>{{ form.website_link.label_tag }} {{ form.website_link }} {{ form.website_link.help_text }} {{ form.website_link.errors }}</p>
+                    <p>{{ form.twitter_link.label_tag }} {{ form.twitter_link }} {{ form.twitter_link.help_text }} {{ form.twitter_link.errors }}</p>
+                    <p>{{ form.facebook_link.label_tag }} {{ form.facebook_link }} {{ form.facebook_link.help_text }} {{ form.facebook_link.errors }}</p>
+                    <p>{{ form.instagram_link.label_tag }} {{ form.instagram_link }} {{ form.instagram_link.help_text }} {{ form.instagram_link.errors }}</p>
+                    <p>{{ form.linkedin_link.label_tag }} {{ form.linkedin_link }} {{ form.linkedin_link.help_text }} {{ form.linkedin_link.errors }}</p>
+                </div>
+                <p><input type="checkbox" name="agree" required> I agree to ByteWrite's <a href="{% url 'term' %}" target="_blank">Terms of Service</a> and <a href="{% url 'privacy' %}" target="_blank">Privacy Policy</a></p>
+                <div style="text-align: right;"><button type="submit" class="btn btn-primary">Register</button></div>
+            </form><br>
+            <p style="text-align: center;">Already Have An Account? <a href="{% url 'login' %}">Log In</a></p>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

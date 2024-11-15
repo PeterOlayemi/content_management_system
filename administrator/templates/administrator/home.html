@@ -1,0 +1,150 @@
+{% extends 'administrator/base.html' %}
+
+{% block content %}
+<head>
+    <style>
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .stats .stat {
+            background: #ECF0F1;
+            padding: 20px;
+            flex: 1;
+            margin: 0 10px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .stat h3 {
+            margin: 0;
+            color: #2980B9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+    
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 order-md-last">
+            <h2>Navigation</h2>
+            <div class="ml-4">
+                <p><a href="{% url 'a_manage_user' %}">Manage Users</a></p>
+                <p><a href="{% url 'a_manage_article' %}">Manage Content</a></p>
+                <p><a href="{% url 'a_manage_category' %}">Manage Article Categories</a></p>
+                <p><a href="{% url 'a_manage_contact' %}">Manage ByteWrite Contact Information</a></p>
+                <p><a href="{% url 'a_manage_team' %}">Manage ByteWrite Team Information</a></p>
+                <p><a href="{% url 'a_manage_log' %}">Manage Website Logs</a>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <h2>Welcome, Admin!</h2>
+            <p>Here’s an overview of your site’s performance and administrative tools.</p>
+
+            <!-- Stats Section -->
+            <div class="stats">
+                <div class="stat">
+                    <h3>{{ active_users }}</h3>
+                    <p>Active Users</p>
+                </div>
+                <div class="stat">
+                    <h3>{{ active_readers }}</h3>
+                    <p>Active Readers</p>
+                </div>
+                <div class="stat">
+                    <h3>{{ active_writers }}</h3>
+                    <p>Active Writers</p>
+                </div>
+                <div class="stat">
+                    <h3>{{ active_admins }}</h3>
+                    <p>Active Admins</p>
+                </div>
+                <div class="stat">
+                    <h3>{{ new_articles }}</h3>
+                    <p>New Articles</p>
+                </div>
+                <div class="stat">
+                    <h3>{{ new_comments }}</h3>
+                    <p>New Comments</p>
+                </div>
+            </div>
+            {% if logs %}<br><br>
+            <h3>Recent Activity</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>
+                            {% if log.user %}
+                                {% if log.user.groups.first.name == 'Reader' %}
+                                    <a href="{% url 'a_reader_profile' log.user.pk %}">{{ log.user.username }}</a>
+                                {% elif log.user.groups.first.name == 'Writer' %}
+                                    <a href="{% url 'a_writer_profile' log.user.pk %}">{{ log.user.username }}</a>
+                                {% elif log.user.groups.first.name == 'Admin' %}
+                                    <a href="{% url 'a_admin_profile' log.user.pk %}">{{ log.user.username }}</a>
+                                {% endif %}
+                            {% else %}
+                                Deleted User
+                            {% endif %}
+                        </td>
+                        <td>{{ log.action }}</td>
+                        <td>{{ log.date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+            {% if articles %}<br><br>
+            <h3>Top Articles</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Views</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for article in articles %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'a_article_detail' article.pk %}">{{article.title}}</a>
+                        </td>
+                        <td>{{ article.views }}</td>
+                        <td>{{ article.date_added }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

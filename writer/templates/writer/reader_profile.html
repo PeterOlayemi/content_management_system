@@ -1,0 +1,47 @@
+{% extends 'writer/base.html' %}
+
+{% block content %}
+
+<!-- Page Title -->
+<div class="page-title">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+    <h1 class="mb-2 mb-lg-0">
+        {{user.username|title}}'s Profile
+    </h1>
+    <nav class="breadcrumbs">
+        <ol>
+            <li><a href="{% url 'writer_home' %}">Home</a></li>
+            <li class="current">
+                <a href="{% url 'w_reader_profile' user.pk %}">{{user.username|title}}'s Profile</a>
+            </li>
+        </ol>
+    </nav>
+    </div>
+</div><!-- End Page Title -->
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-lg-4 sidebar">
+
+            <div class="widgets-container">
+
+                <!-- Blog Author Widget 2 -->
+                <div class="blog-author-widget-2 widget-item">
+
+                    <div class="d-flex flex-column align-items-center">
+                        <i class="bi bi-person rounded-circle flex-shrink-0" style="font-size: 100px;"></i>
+                        <h4>{{ user.username|title }}</h4>
+                        <p>Email: <a href="mailto:{{user.email}}">{{user.email}}</a></p>
+                        <p>Role: {{user.role}}</p>
+                    </div>
+
+                </div><!--/Blog Author Widget 2 -->
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

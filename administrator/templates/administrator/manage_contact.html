@@ -1,0 +1,107 @@
+{% extends 'administrator/base.html' %}}
+
+{% block content %}
+<!-- Page Title -->
+<div class="page-title">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+    <h1 class="mb-2 mb-lg-0">
+        Manage Contact
+    </h1>
+    <nav class="breadcrumbs">
+        <ol>
+            <li><a href="{% url 'admin_home' %}">Home</a></li>
+            <li class="current">Manage Contact</li>
+            {% if contact %}
+                <li><a href="{% url 'a_contact_update' contact.pk %}">Edit Contact</a></li>
+            {% else %}
+                <li><a href="{% url 'a_contact_create' %}">Create Contact</a></li>
+            {% endif %}
+        </ol>
+    </nav>
+    </div>
+</div><!-- End Page Title -->
+
+<!-- Contact Section -->
+<section id="contact" class="contact section">
+
+    <div class="container" data-aos="fade-up">
+
+        <div class="row gy-4">
+
+            {% if contact %}
+            <div class="col-lg-6">
+                <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+                    <i class="bi bi-geo-alt flex-shrink-0"></i>
+                    <div>
+                        <h3>Address</h3>
+                        <p>{{ contact.address }}</p>
+                    </div>
+                </div><!-- End Info Item -->
+
+                <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
+                    <i class="bi bi-telephone flex-shrink-0"></i>
+                    <div>
+                        <h3>Call Us</h3>
+                        <p>{{ contact.phone }}</p>
+                    </div>
+                </div><!-- End Info Item -->
+
+                <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="500">
+                    <i class="bi bi-envelope flex-shrink-0"></i>
+                    <div>
+                        <h3>Email Us</h3>
+                        <p><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></p>
+                    </div>
+                </div><!-- End Info Item -->
+
+            </div>
+
+            <div class="col-lg-6">
+                {% if contact.twitter_link %}
+                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+                        <i class="bi bi-twitter-x"></i>
+                        <div>
+                            <h3>Twitter</h3>
+                            <p><a href="{{ contact.twitter_link }}">{{ contact.twitter_link }}</a></p>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if contact.facebook_link %}
+                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+                        <i class="bi bi-facebook"></i>
+                        <div>
+                            <h3>Facebook</h3>
+                            <p><a href="{{ contact.facebook_link }}">{{ contact.facebook_link }}</a></p>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if contact.instagram_link %}
+                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+                        <i class="bi bi-instagram"></i>
+                        <div>
+                            <h3>Instagram</h3>
+                            <p><a href="{{ contact.instagram_link }}">{{ contact.instagram_link }}</a></p>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if contact.linkedin_link %}
+                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+                        <i class="bi bi-linkedin"></i>
+                        <div>
+                            <h3>LinkedIn</h3>
+                            <p><a href="{{ contact.linkedin_link }}">{{ contact.linkedin_link }}</a></p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            {% else %}
+                <p>No Contact Information</p>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section><!-- /Contact Section -->
+
+{% endblock %}

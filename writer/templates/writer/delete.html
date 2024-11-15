@@ -1,0 +1,46 @@
+{% extends 'writer/base.html' %}
+
+{% block content %}
+
+<!-- Page Title -->
+<div class="page-title position-relative">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">Delete</h1>
+        <nav class="breadcrumbs">
+            <ol>
+                <li><a href="{% url 'writer_home' %}">Home</a></li>
+                {% if article %}
+                    <li><a href="{% url 'writer_article_detail' article.pk %}">Article Detail</a></li>
+                    {% if article.status == 'DRAFT' %}
+                        <li><a href="{% url 'writer_article_update' article.pk %}">Publish/Edit Draft</a></li>
+                    {% else %}
+                        <li><a href="{% url 'writer_article_update' article.pk %}">Edit Article</a></li>
+                    {% endif %}
+                    <li class="current">Delete Article</li>
+                {% elif comment %}
+                    <li><a href="{% url 'writer_article_detail' comment.article.pk %}">Article Detail</a></li>
+                    <li class="current">Delete Comment</li>
+                {% endif %}
+            </ol>
+        </nav>
+    </div>
+</div><!-- End Page Title -->
+
+<div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <form method="POST">
+                {% csrf_token %}
+                {% if article %}
+                    <p>Do you want to delete the article - "{{article.title}}" added on - "{{article.date_added}}"</p>
+                    <div style="text-align: right;"><button type="submit" class="btn btn-danger">Delete</button> <a class="btn btn-primary" href="{% url 'writer_article_detail' article.pk %}">Cancel</a></div>
+                {% elif comment %}
+                    <p>Do you want to delete the comment - "{{comment.content}}" on the article - "{{comment.article.title}}" added on - "{{comment.date_added}}"</p>
+                    <div style="text-align: right;"><button type="submit" class="btn btn-danger">Delete</button> <a class="btn btn-primary" href="{% url 'writer_article_detail' comment.article.pk %}">Cancel</a></div>
+                {% endif %}
+            </form><br><br>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

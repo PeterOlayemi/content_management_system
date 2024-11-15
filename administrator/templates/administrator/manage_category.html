@@ -1,0 +1,110 @@
+{% extends 'administrator/base.html' %}
+
+{% block content %}
+<!-- Page Title -->
+<div class="page-title">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+    <h1 class="mb-2 mb-lg-0">
+        Manage Categories({{ total_categories }}){% if search_query %} - Results For {{search_query}}{% endif %}
+    </h1>
+    <nav class="breadcrumbs">
+        <ol>
+            <li><a href="{% url 'admin_home' %}">Home</a></li>
+            <li class="current">Manage Categories</li>
+            <li><a href="{% url 'a_category_create' %}">Add New Category</a></li>
+        </ol>
+    </nav>
+    </div>
+</div><!-- End Page Title -->
+
+<!-- Search Widget -->
+<div class="container search-widget widget-item">
+
+  <h3 class="widget-title">Search</h3>
+  <form method="get">
+    <input type="text" name="q" value="{{ search_query }}" placeholder="Search Category">
+    <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+  </form>
+
+</div><!--/Search Widget -->
+
+<div class="container">
+    {% if categories %}
+        {% for category in categories %}
+            <p>- <a href="{% url 'a_article_category_list' category.name %}">{{ category.name }}</a></p><br>
+        {% endfor %}
+    {% else %}
+        <p>No category found</p>
+    {% endif %}
+</div>
+
+<!-- Blog Pagination Section -->
+<section id="blog-pagination" class="blog-pagination section">
+
+  <div class="container">
+    <div class="d-flex justify-content-center">
+      <ul>
+
+        {% if categories.has_previous %}
+          <li>
+            <a href="?q={{ search_query }}&page={{ categories.previous_page_number }}">
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          </li>
+        {% endif %}
+
+        {% if categories.paginator.num_pages > 1 %}
+          <li>
+            {% if categories.number == 1 %}
+              <a href="?q={{ search_query }}&page=1" class="active">1</a>
+            {% else %}
+              <a href="?q={{ search_query }}&page=1">1</a>
+            {% endif %}
+          </li>
+        {% endif %}
+
+        {% if categories.number > 4 %}
+          <li>...</li>
+        {% endif %}
+
+        {% for num in categories.paginator.page_range %}
+          {% if num > 1 and num < categories.paginator.num_pages %}
+            {% if num >= categories.number|add:"-2" and num <= categories.number|add:"2" %}
+              <li>
+                {% if categories.number == num %}
+                  <a href="?q={{ search_query }}&page={{ num }}" class="active">{{ num }}</a>
+                {% else %}
+                  <a href="?q={{ search_query }}&page={{ num }}">{{ num }}</a>
+                {% endif %}
+              </li>
+            {% endif %}
+        {% endif %}
+        {% endfor %}
+
+        {% if categories.number < categories.paginator.num_pages|add:"-3" %}
+          <li>...</li>
+        {% endif %}
+
+        {% if categories.paginator.num_pages > 1 %}
+          <li>
+            {% if categories.number == categories.paginator.num_pages %}
+              <a href="?q={{ search_query }}&page={{ categories.paginator.num_pages }}" class="active">{{ categories.paginator.num_pages }}</a>
+            {% else %}
+              <a href="?q={{ search_query }}&page={{ categories.paginator.num_pages }}">{{ categories.paginator.num_pages }}</a>
+            {% endif %}
+          </li>
+        {% endif %}
+
+        {% if categories.has_next %}
+          <li>
+            <a href="?q={{ search_query }}&page={{ categories.next_page_number }}">
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+
+</section><!-- /Blog Pagination Section -->
+{% endblock %}

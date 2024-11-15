@@ -1,0 +1,446 @@
+{% extends 'writer/base.html' %}
+
+{% block content %}
+
+<!-- Search Widget -->
+<div class="container search-widget widget-item">
+
+  <h3 class="widget-title">Search</h3>
+  <form method="get">
+    <input type="text" name="q" value="{{ search_query }}" placeholder="Search Title/Category/Writer">
+    <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+  </form>
+
+</div><!--/Search Widget -->
+
+{% if articles %}
+  <div class="container section-title" data-aos="fade-up">
+    <div class="section-title-container d-flex align-items-center justify-content-between">
+      <h2>Articles ({{total_articles}})</h2>
+    </div>
+  </div>
+{% endif %}
+
+<!-- Slider Section -->
+<section id="slider" class="slider section dark-background">
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+    <div class="swiper init-swiper">
+
+      <script type="application/json" class="swiper-config">
+        {
+          "loop": true,
+          "speed": 600,
+          "autoplay": {
+            "delay": 5000
+          },
+          "slidesPerView": "auto",
+          "centeredSlides": true,
+          "pagination": {
+            "el": ".swiper-pagination",
+            "type": "bullets",
+            "clickable": true
+          },
+          "navigation": {
+            "nextEl": ".swiper-button-next",
+            "prevEl": ".swiper-button-prev"
+          }
+        }
+      </script>
+
+      <div class="swiper-wrapper">
+        {% for slide in slides %}
+          {% if forloop.counter == 1 %}
+            <div class="swiper-slide" style="background-image: url('{{slide.image.url}}');">
+              <div class="content">
+                <h2><a href="{% url 'writer_article_detail' slide.pk %}">{{slide.title}}</a></h2>
+                <p>{{slide.content|slice:200}}...</p>
+              </div>
+            </div>
+          {% endif %}
+
+          {% if forloop.counter == 2 %}
+            <div class="swiper-slide" style="background-image: url('{{slide.image.url}}');">
+              <div class="content">
+                <h2><a href="{% url 'writer_article_detail' slide.pk %}">{{slide.title}}</a></h2>
+                <p>{{slide.content|slice:200}}...</p>
+              </div>
+            </div>
+          {% endif %}
+
+          {% if forloop.counter == 3 %}
+            <div class="swiper-slide" style="background-image: url('{{slide.image.url}}');">
+              <div class="content">
+                <h2><a href="{% url 'writer_article_detail' slide.pk %}">{{slide.title}}</a></h2>
+                <p>{{slide.content|slice:200}}...</p>
+              </div>
+            </div>
+          {% endif %}
+
+          {% if forloop.counter == 4 %}
+            <div class="swiper-slide" style="background-image: url('{{slide.image.url}}');">
+              <div class="content">
+                <h2><a href="{% url 'writer_article_detail' slide.pk %}">{{slide.title}}</a></h2>
+                <p>{{slide.content|slice:200}}...</p>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+
+      <div class="swiper-pagination"></div>
+    </div>
+
+  </div>
+
+</section><!-- /Slider Section -->
+
+{% if trending_articles %}
+  <!-- Trending Articles Section -->
+  <section id="trending-category" class="trending-category section">
+
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+      <div class="section-title-container d-flex align-items-center justify-content-between">
+        <h2>Trending Articles</h2>
+      </div>
+    </div><!-- End Section Title -->
+
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+      <div class="container" data-aos="fade-up">
+        <!-- Create a row outside the loop -->
+        <div class="row g-5">
+          <!-- First column, article #1 -->
+          <div class="col-lg-4">
+            {% if trending_articles|length > 0 %}
+              <div class="post-entry lg">
+                <a href="{% url 'writer_article_detail' trending_articles.0.pk %}"><img src="{{ trending_articles.0.image.url }}" alt="" class="img-fluid"></a>
+                <div class="post-meta">
+                  <span class="date">{% for objects in trending_articles.0.category.all %}{{objects.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+                  <span class="mx-1">•</span> 
+                  <span>{{trending_articles.0.date_updated}}</span>
+                </div>
+                <h2><a href="{% url 'writer_article_detail' trending_articles.0.pk %}">{{ trending_articles.0.title }}</a></h2>
+                <p class="mb-4 d-block">{{ trending_articles.0.content|slice:200 }}...</p>
+                <div class="d-flex align-items-center author">
+                  <div class="photo">
+                    {% if trending_articles.0.writer.profile_picture %}
+                        <img src="{{ trending_articles.0.writer.profile_picture.url }}" alt="" class="img-fluid">
+                    {% else %}
+                        <i class="bi bi-person" class="img-fluid"></i>
+                    {% endif %}
+                  </div>
+                  <div class="name">
+                    <h3 class="m-0 p-0">
+                      {% if trending_articles.0.writer.groups.first.name == 'Writer' %}
+                          <a href="{% url 'w_writer_profile' trending_articles.0.writer.pk %}">{{ trending_articles.0.writer.username|title }}</a>
+                      {% elif trending_articles.0.writer.groups.first.name == 'Admin' %}
+                          <a href="{% url 'w_admin_profile' trending_articles.0.writer.pk %}">{{ trending_articles.0.writer.username|title }}</a>
+                      {% endif %}
+                    </h3>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Second column for articles #2, #3, #4 -->
+          <div class="col-lg-8">
+            <div class="row g-5">
+                <div class="col-lg-4 border-start custom-border">
+                  {% for article in trending_articles|slice:"1:4" %}
+                    <div class="post-entry">
+                      <a href="{% url 'writer_article_detail' article.pk %}"><img src="{{ article.image.url }}" alt="" class="img-fluid"></a>
+                      <div class="post-meta">
+                        <span class="date">{% for objects in article.category.all %}{{objects.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+                        <span class="mx-1">•</span>
+                        <span>{{ article.date_updated }}</span>
+                      </div>
+                      <h2><a href="{% url 'writer_article_detail' article.pk %}">{{ article.title }}</a></h2>
+                    </div>
+                  {% endfor %}
+                </div>
+                <div class="col-lg-4 border-start custom-border">
+                  {% for article in trending_articles|slice:"4:7" %}
+                    <div class="post-entry">
+                      <a href="{% url 'writer_article_detail' article.pk %}"><img src="{{ article.image.url }}" alt="" class="img-fluid"></a>
+                      <div class="post-meta">
+                        <span class="date">{% for objects in article.category.all %}{{objects.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+                        <span class="mx-1">•</span>
+                        <span>{{ article.date_updated }}</span>
+                      </div>
+                      <h2><a href="{% url 'writer_article_detail' article.pk %}">{{ article.title }}</a></h2>
+                    </div>
+                  {% endfor %}
+                </div>
+              <div class="col-lg-4">
+                <div class="trending">
+                  <h3>Trending</h3>
+                  <ul class="trending-post">
+                    {% for article in trending_articles|slice:"7:12" %}
+                      <li>
+                        <a href="{% url 'writer_article_detail' article.pk %}">
+                          <span class="number">{{ forloop.counter }}</span>
+                          <h3>{{ article.title }}</h3>
+                          <span class="author">{{ article.writer.username|title }}</span>
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> <!-- End .row -->
+      </div>
+    </div>
+
+  </section><!-- /Trending Articles Section -->
+{% endif %}
+
+<!-- All Articles Section -->
+<section id="business-category" class="business-category section">
+
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <div class="section-title-container d-flex align-items-center justify-content-between">
+      {% if search_query %}
+        <h2>Search Results For '{{search_query}}'</h2>
+      {% else %}
+        <h2>All Articles</h2>
+      {% endif %}
+    </div>
+  </div><!-- End Section Title -->
+
+{% if articles %}
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+    <div class="row">
+      <div class="col-md-9 order-md-2">
+
+        <div class="d-lg-flex post-entry">
+          {% if articles|length > 0 %}
+            <a href="{% url 'writer_article_detail' articles.0.pk %}" class="me-4 thumbnail d-inline-block mb-4 mb-lg-0">
+              <img src="{{articles.0.image.url}}" alt="" class="img-fluid">
+            </a>
+            <div>
+              <div class="post-meta">
+                <span class="date">{% for objects in articles.0.category.all %}{{objects.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+                <span class="mx-1">•</span> 
+                <span>{{articles.0.date_added}}</span>
+              </div>
+              <h3><a href="{% url 'writer_article_detail' articles.0.pk %}">{{articles.0.title}}</a></h3>
+              <p>{{articles.0.content|slice:200}}...</p>
+              <div class="d-flex align-items-center author">
+                <div class="photo">
+                  {% if articles.0.writer.profile_picture %}
+                      <img src="{{articles.0.writer.profile_picture.url}}" alt="" class="img-fluid">
+                  {% else %}
+                      <i class="bi bi-person" class="img-fluid"></i>
+                  {% endif %}
+                </div>
+                <div class="name">
+                  <h3 class="m-0 p-0">
+                    {% if articles.0.writer.groups.first.name == 'Writer' %}
+                        <a href="{% url 'w_writer_profile' articles.0.writer.pk %}">{{ articles.0.writer.username|title }}</a>
+                    {% elif articles.0.writer.groups.first.name == 'Admin' %}
+                        <a href="{% url 'w_admin_profile' articles.0.writer.pk %}">{{ articles.0.writer.username|title }}</a>
+                    {% endif %}
+                  </h3>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="row">
+          <div class="col-lg-4">
+            {% for article in articles|slice:"1:2" %}
+              <div class="post-list border-bottom">
+                <a href="{% url 'writer_article_detail' article.pk %}"><img src="{{article.image.url}}" alt="" class="img-fluid"></a>
+                <div class="post-meta">
+                  <span class="date">{% for objects in article.category.all %}{{objects.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+                  <span class="mx-1">•</span> 
+                  <span>{{article.date_added}}</span>
+                </div>
+                <h2 class="mb-2"><a href="{% url 'writer_article_detail' article.pk %}">{{article.title}}</a></h2>
+                <span class="author mb-3 d-block">
+                  {% if article.writer.groups.first.name == 'Writer' %}
+                      <a href="{% url 'w_writer_profile' article.writer.pk %}">{{ article.writer.username|title }}</a>
+                  {% elif article.writer.groups.first.name == 'Admin' %}
+                      <a href="{% url 'w_admin_profile' article.writer.pk %}">{{ article.writer.username|title }}</a>
+                  {% endif %}
+                </span>
+                <p class="mb-4 d-block">{{article.content|slice:150}}...</p>
+              </div>
+            {% endfor %}
+
+            {% for article in articles|slice:"2:3" %}
+              <div class="post-list">
+                <div class="post-meta">
+                  <span class="date">{% for objects in article.category.all %}{{objects.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+                  <span class="mx-1">•</span> 
+                  <span>{{article.date_added}}</span>
+                </div>
+                <h2 class="mb-2"><a href="{% url 'writer_article_detail' article.pk %}">{{article.title}}</a></h2>
+                <span class="author mb-3 d-block">
+                  {% if article.writer.groups.first.name == 'Writer' %}
+                      <a href="{% url 'w_writer_profile' article.writer.pk %}">{{ article.writer.username|title }}</a>
+                  {% elif article.writer.groups.first.name == 'Admin' %}
+                      <a href="{% url 'w_admin_profile' article.writer.pk %}">{{ article.writer.username|title }}</a>
+                  {% endif %}
+                </span>
+              </div>
+            {% endfor %}
+          </div>
+          <div class="col-lg-8">
+            {% for article in articles|slice:"3:4" %}
+              <div class="post-list">
+                <a href="{% url 'writer_article_detail' article.pk %}"><img src="{{article.image.url}}" alt="" class="img-fluid"></a>
+                <div class="post-meta">
+                  <span class="date">{% for objects in article.category.all %}{{objects.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+                  <span class="mx-1">•</span> 
+                  <span>{{article.date_added}}</span>
+                </div>
+                <h2 class="mb-2"><a href="{% url 'writer_article_detail' article.pk %}">{{article.title}}</a></h2>
+                <span class="author mb-3 d-block">
+                  {% if article.writer.groups.first.name == 'Writer' %}
+                      <a href="{% url 'w_writer_profile' article.writer.pk %}">{{ article.writer.username|title }}</a>
+                  {% elif article.writer.groups.first.name == 'Admin' %}
+                      <a href="{% url 'w_admin_profile' article.writer.pk %}">{{ article.writer.username|title }}</a>
+                  {% endif %}
+                </span>
+                <p class="mb-4 d-block">{{article.content|slice:200}}...</p>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        {% for article in articles|slice:"4:10" %}
+          <div class="post-list border-bottom">
+            <div class="post-meta">
+              <span class="date">{% for objects in article.category.all %}{{objects.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+              <span class="mx-1">•</span>
+              <span>{{ article.date_added }}</span>
+            </div>
+            <h2 class="mb-2"><a href="{% url 'writer_article_detail' article.pk %}">{{ article.title }}</a></h2>
+            <span class="author mb-3 d-block">
+              {% if article.writer.groups.first.name == 'Writer' %}
+                  <a href="{% url 'w_writer_profile' article.writer.pk %}">{{ article.writer.username|title }}</a>
+              {% elif article.writer.groups.first.name == 'Admin' %}
+                  <a href="{% url 'w_admin_profile' article.writer.pk %}">{{ article.writer.username|title }}</a>
+              {% endif %}
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+{% else %}
+    <p class="container section-title" data-aos="fade-up">No Article Found</p>
+{% endif %}
+
+</section><!-- /All Articles Section -->
+
+<!-- Blog Pagination Section -->
+<section id="blog-pagination" class="blog-pagination section">
+
+  <div class="container">
+    <div class="d-flex justify-content-center">
+      <ul>
+
+        {% if articles.has_previous %}
+          <li>
+            <a href="?q={{ search_query }}&page={{ articles.previous_page_number }}">
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          </li>
+        {% endif %}
+
+        {% if articles.paginator.num_pages > 1 %}
+          <li>
+            {% if articles.number == 1 %}
+              <a href="?q={{ search_query }}&page=1" class="active">1</a>
+            {% else %}
+              <a href="?q={{ search_query }}&page=1">1</a>
+            {% endif %}
+          </li>
+        {% endif %}
+
+        {% if articles.number > 4 %}
+          <li>...</li>
+        {% endif %}
+
+        {% for num in articles.paginator.page_range %}
+          {% if num > 1 and num < articles.paginator.num_pages %}
+            {% if num >= articles.number|add:"-2" and num <= articles.number|add:"2" %}
+              <li>
+                {% if articles.number == num %}
+                  <a href="?q={{ search_query }}&page={{ num }}" class="active">{{ num }}</a>
+                {% else %}
+                  <a href="?q={{ search_query }}&page={{ num }}">{{ num }}</a>
+                {% endif %}
+              </li>
+            {% endif %}
+        {% endif %}
+        {% endfor %}
+
+        {% if articles.number < articles.paginator.num_pages|add:"-3" %}
+          <li>...</li>
+        {% endif %}
+
+        {% if articles.paginator.num_pages > 1 %}
+          <li>
+            {% if articles.number == articles.paginator.num_pages %}
+              <a href="?q={{ search_query }}&page={{ articles.paginator.num_pages }}" class="active">{{ articles.paginator.num_pages }}</a>
+            {% else %}
+              <a href="?q={{ search_query }}&page={{ articles.paginator.num_pages }}">{{ articles.paginator.num_pages }}</a>
+            {% endif %}
+          </li>
+        {% endif %}
+
+        {% if articles.has_next %}
+          <li>
+            <a href="?q={{ search_query }}&page={{ articles.next_page_number }}">
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+
+</section><!-- /Blog Pagination Section -->
+
+<!-- Category Section -->
+<section id="lifestyle-category" class="lifestyle-category section">
+
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <div class="section-title-container d-flex align-items-center justify-content-between">
+      <h2>Categories ({{total_categories}})</h2>
+    </div>
+  </div><!-- End Section Title -->
+
+  <div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="tags-widget widget-item">
+      <ul>
+        {% for category in categories %}
+          <li><a href="{% url 'writer_article_category_list' category.name %}">{{ category.name }}</a></li>
+        {% empty %}
+          <p>No Category At The Moment</p>
+        {% endfor %}
+      </ul>
+    </div>
+  </div><!-- End Info Item -->
+
+</section><!-- /Category Section -->
+
+{% endblock %}

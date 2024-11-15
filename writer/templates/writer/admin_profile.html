@@ -1,0 +1,238 @@
+{% extends 'writer/base.html' %}
+
+{% block content %}
+
+<!-- Page Title -->
+<div class="page-title">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+    <h1 class="mb-2 mb-lg-0">
+        {{user.username|title}}'s Profile
+    </h1>
+    <nav class="breadcrumbs">
+        <ol>
+            <li><a href="{% url 'writer_home' %}">Home</a></li>
+            <li class="current">
+                <a href="{% url 'w_admin_profile' user.pk %}">
+                    {{user.username|title}}'s Profile
+                </a>
+            </li>
+        </ol>
+    </nav>
+    </div>
+</div><!-- End Page Title -->
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-lg-4 sidebar">
+
+            <div class="widgets-container">
+
+                <!-- Blog Author Widget 2 -->
+                <div class="blog-author-widget-2 widget-item">
+
+                    <div class="d-flex flex-column align-items-center">
+                        <i class="bi bi-person rounded-circle flex-shrink-0" style="font-size: 100px;"></i>
+                        <h4>{{ user.username|title }}</h4>
+                        <p>Email: <a href="mailto:{{user.email}}">{{user.email}}</a></p>
+                        <p>Role: Admin</p>
+                        <div class="social-links">
+                            {% if user.website_link %}
+                                <a href="{{user.website_link}}"><i class="bi bi-house"></i></a>
+                            {% endif %}
+                            {% if user.twitter_link %}
+                                <a href="{{user.twitter_link}}"><i class="bi bi-twitter-x"></i></a>
+                            {% endif %}
+                            {% if user.facebook_link %}
+                                <a href="{{user.facebook_link}}"><i class="bi bi-facebook"></i></a>
+                            {% endif %}
+                            {% if user.instagram_link %}
+                                <a href="{{user.instagram_link}}"><i class="biu bi-instagram"></i></a>
+                            {% endif %}
+                            {% if user.linkedin_link %}
+                                <a href="{{user.linkedin_link}}"><i class="biu bi-linkedin"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div><!--/Blog Author Widget 2 -->
+
+                {% if published_articles %}
+                    <!-- Search Widget -->
+                    <div class="search-widget widget-item">
+
+                        <h3 class="widget-title">Search</h3>
+                        <form method="get">
+                            <input type="text" name="q" value="{{ search_query }}" placeholder="Search {{ user.username|title }}'s Published Articles">
+                            <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+                        </form>
+
+                    </div><!--/Search Widget -->
+                {% endif %}
+
+                <!-- Recent Posts Widget -->
+                <div class="recent-posts-widget widget-item">
+
+                    <h3 class="widget-title">Recent Posts From {{ user.username|title }}</h3>
+
+                    {% for post in recent_posts %}
+                    <div class="post-item">
+                        <img src="{{ post.image.url }}" alt="" class="flex-shrink-0">
+                        <div>
+                            <h4><a href="{% url 'writer_article_detail' post.pk %}">{{ post.title }}</a></h4>
+                            <time datetime="{{post.date_added}}">{{post.date_added}}</time>
+                        </div>
+                    </div><!-- End recent post item-->
+                    {% empty %}
+                        <p>No Recent Posts</p>
+                    {% endfor %}
+
+                </div><!--/Recent Posts Widget -->
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-8">
+            <br>
+            <!-- Section Title -->
+            <div class="section-title" data-aos="fade-up">
+                <div class="section-title-container d-flex align-items-center justify-content-between">
+                <h4>
+                    {% if user == request.user %}My {% else %}{{user.username|title}}'s {% endif %}Published Articles {% if search_query %}(Search Results For '{{search_query}}'){% endif %}
+                </h4>
+                </div>
+            </div><!-- End Section Title -->
+
+            {% if published_articles %}
+                <!-- Blog Posts Section -->
+                <section id="blog-posts" class="blog-posts section" data-aos="fade-up">
+
+                    <div class="container">
+                        <div class="row gy-4">
+
+                            {% for obj in published_articles %}
+                                <div class="col-lg-6">
+                                    <article class="position-relative h-100">
+
+                                        <div class="post-img position-relative overflow-hidden">
+                                            <img src="{{ obj.image.url }}" class="img-fluid" alt="">
+                                            <span class="post-date">{{ obj.date_added}}</span>
+                                        </div>
+
+                                        <div class="post-content d-flex flex-column">
+
+                                            <h3 class="post-title">{{ obj.title }}</h3>
+
+                                            <div class="meta d-flex align-items-center">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="bi bi-folder2"></i> 
+                                                    <span class="ps-2">
+                                                        {% for objects in obj.category.all %}
+                                                            {{objects.name}}{% if not forloop.last %}, {% endif %}
+                                                        {% endfor %}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <p>{{ obj.content|slice:200 }}...</p>
+
+                                            <hr>
+
+                                            <a href="{% url 'writer_article_detail' obj.pk %}" class="readmore stretched-link"><span>Read More</span><i
+                                                    class="bi bi-arrow-right"></i></a>
+
+                                        </div>
+
+                                    </article>
+                                </div><!-- End post list item -->
+                        
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- Blog Pagination Section -->
+                <section id="blog-pagination" class="blog-pagination section">
+
+                <div class="container">
+                    <div class="d-flex justify-content-center">
+                    <ul>
+
+                        {% if published_articles.has_previous %}
+                        <li>
+                            <a href="?q={{ search_query }}&published_articles_page={{ published_articles.previous_page_number }}">
+                            <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% if published_articles.paginator.num_pages > 1 %}
+                        <li>
+                            {% if published_articles.number == 1 %}
+                                <a href="?q={{ search_query }}&published_articles_page=1" class="active">1</a>
+                            {% else %}
+                                <a href="?q={{ search_query }}&published_articles_page=1">1</a>
+                            {% endif %}
+                        </li>
+                        {% endif %}
+
+                        {% if published_articles.number > 4 %}
+                        <li>...</li>
+                        {% endif %}
+
+                        {% for num in published_articles.paginator.page_range %}
+                        {% if num > 1 and num < published_articles.paginator.num_pages %}
+                            {% if num >= published_articles.number|add:"-2" and num <= published_articles.number|add:"2" %}
+                            <li>
+                                {% if published_articles.number == num %}
+                                <a href="?q={{ search_query }}&published_articles_page={{ num }}" class="active">{{ num }}</a>
+                                {% else %}
+                                <a href="?q={{ search_query }}&published_articles_page={{ num }}">{{ num }}</a>
+                                {% endif %}
+                            </li>
+                            {% endif %}
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if published_articles.number < published_articles.paginator.num_pages|add:"-3" %}
+                        <li>...</li>
+                        {% endif %}
+
+                        {% if published_articles.paginator.num_pages > 1 %}
+                        <li>
+                            {% if published_articles.number == published_articles.paginator.num_pages %}
+                            <a href="?q={{ search_query }}&published_articles_page={{ published_articles.paginator.num_pages }}" class="active">{{ published_articles.paginator.num_pages }}</a>
+                            {% else %}
+                            <a href="?q={{ search_query }}&published_articles_page={{ published_articles.paginator.num_pages }}">{{ published_articles.paginator.num_pages }}</a>
+                            {% endif %}
+                        </li>
+                        {% endif %}
+
+                        {% if published_articles.has_next %}
+                        <li>
+                            <a href="?q={{ search_query }}&published_articles_page={{ published_articles.next_page_number }}">
+                            <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                    </div>
+                </div>
+
+                </section><!-- /Blog Pagination Section -->
+            {% else %}
+                <section id="blog-posts" class="blog-posts section" data-aos="fade-up">
+
+                    <div class="container">
+                        No Published Article
+                    </div>
+
+                </section>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

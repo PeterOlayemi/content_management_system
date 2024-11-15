@@ -1,0 +1,411 @@
+{% extends 'administrator/base.html' %}
+
+{% block content %}
+
+<!-- Page Title -->
+<div class="page-title">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+    <h1 class="mb-2 mb-lg-0">Article Detail</h1>
+    <nav class="breadcrumbs">
+        <ol>
+            <li><a href="{% url 'admin_home' %}">Home</a></li>
+            <li><a href="{% url 'a_manage_article' %}">Manage Articles</a></li>
+            <li class="current"><a href="{% url 'a_article_detail' article.pk %}">Article Detail</a></li>
+            {% if article.status == 'DRAFT' %}
+                <li><a href="{% url 'a_article_update' article.pk %}">Publish/Edit Draft</a></li>
+                <li><a href="{% url 'a_article_delete' article.pk %}">Delete Article</a></li>
+            {% else %}
+                <li><a href="{% url 'a_article_update' article.pk %}">Edit Article</a></li>
+                <li><a href="{% url 'a_article_delete' article.pk %}">Delete Article</a></li>
+            {% endif %}
+        </ol>
+    </nav>
+    </div>
+</div><!-- End Page Title -->
+
+<div class="container">
+    <div class="row">
+
+    <div class="col-lg-8">
+
+        <!-- Blog Details Section -->
+        <section id="blog-details" class="blog-details section">
+            <div class="container">
+
+                <article class="article">
+
+                    <div class="post-img">
+                        <img src="{{ article.image.url }}" alt="" class="img-fluid">
+                    </div>
+
+                    <h2 class="title">{{ article.title }}</h2>
+
+                    <div class="meta-top">
+                        <ul>
+                            <li class="d-flex align-items-center">
+                                <i class="bi bi-person"></i> 
+                                {% if article.writer == request.user %}
+                                    <a href="{% url 'a_admin_profile' request.user.pk %}">{{request.user.username|title}} (You)</a>
+                                {% else %}
+                                    {% if article.writer.groups.first.name == 'Writer' %}
+                                        <a href="{% url 'a_writer_profile' article.writer.pk %}">{{ article.writer.username|title }}</a>
+                                    {% elif article.writer.groups.first.name == 'Admin' %}
+                                        <a href="{% url 'a_admin_profile' article.writer.pk %}">{{ article.writer.username|title }}</a>
+                                    {% endif %}
+                                {% endif %}
+                            </li>
+                            <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <time datetime="{{article.date_added}}">{{article.date_added}}</time></li>
+                            {% if article.status == 'PUBLISH' %}
+                                <li class="d-flex align-items-center">
+                                    <i class="bi bi-eye"></i>
+                                    {{ article.views }} View{{article.views|pluralize}}
+                                </li>
+                                <li class="d-flex align-items-center">
+                                    <i class="bi bi-hand-thumbs-up"></i> 
+                                    <a href="{% url 'a_article_liker' article.pk %}">{{ number_of_likes }} Like{{number_of_likes|pluralize}}</a>
+                                </li>
+                                <li class="d-flex align-items-center">
+                                    <i class="bi bi-chat-dots"></i> 
+                                    {{total_comments}} Comment{{total_comments|pluralize}}
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div><!-- End meta top -->
+
+                    <div class="content">
+                        <p>{{ article.content }}</p>
+                    </div><!-- End post content -->
+
+                    <div class="meta-bottom" style="display: flex; justify-content: space-between;">
+                        <div>
+                            <i class="bi bi-folder"></i>
+                            <ul class="cats">
+                                <li>
+                                    {% for objects in article.category.all %}
+                                        <a href="{% url 'a_article_category_list' objects.name %}">{{objects.name}}</a>{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            {% if article.status == 'PUBLISH' %}
+                                <form method="post" action="{% url 'a_article_like' article.pk %}">
+                                    {% csrf_token %}
+                                    {% if article_is_liked %}
+                                        <button type="submit"
+                                            style="
+                                                background: none;
+                                                border: none;
+                                                padding: 0;
+                                                margin: 0;
+                                                color: inherit;
+                                                font: inherit;
+                                                cursor: pointer;
+                                            ">
+                                            <i 
+                                                class="bi bi-hand-thumbs-down" 
+                                                style="
+                                                    color: var(--contrast-color);
+                                                    background: var(--accent-color);
+                                                    font-size: 20px;
+                                                    width: 44px;
+                                                    height: 44px;
+                                                    display: flex;
+                                                    justify-content: center;
+                                                    align-items: center;
+                                                    border-radius: 4px;
+                                                " 
+                                                data-aos="fade-up" 
+                                                data-aos-delay="300">
+                                            </i>
+                                        </button>
+                                    {% else %}
+                                        <button type="submit"
+                                            style="
+                                                background: none;
+                                                border: none;
+                                                padding: 0;
+                                                margin: 0;
+                                                color: inherit;
+                                                font: inherit;
+                                                cursor: pointer;
+                                            ">
+                                            <i 
+                                                class="bi bi-hand-thumbs-up" 
+                                                style="
+                                                    color: var(--contrast-color);
+                                                    background: var(--accent-color);
+                                                    font-size: 20px;
+                                                    width: 44px;
+                                                    height: 44px;
+                                                    display: flex;
+                                                    justify-content: center;
+                                                    align-items: center;
+                                                    border-radius: 4px;
+                                                " 
+                                                data-aos="fade-up" 
+                                                data-aos-delay="300">
+                                            </i>
+                                        </button>
+                                    {% endif %}
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div><!-- End meta bottom -->
+
+                </article>
+
+            </div>
+        </section><!-- /Blog Details Section -->
+
+        {% if article.status == 'PUBLISH' %}
+            <!-- Blog Comments Section -->
+            <section id="blog-comments" class="blog-comments section">
+
+                <div class="container">
+
+                    <h4 class="comments-count">{{total_comments}} Comment{{total_comments|pluralize}}</h4>
+
+                    {% for comment in comments %}
+                        <div id="comment-1" class="comment">
+                            {% if comment.is_parent %}
+                                <div class="d-flex">
+                                    <div class="comment-img">
+                                        {% if comment.writer.profile_picture %}
+                                            <img src="{{ comment.writer.profile_picture.url }}" alt="">
+                                        {% else %}
+                                            <i class="bi bi-person" style="font-size: 60px;"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h5>
+                                            {% if comment.writer.groups.all.0.name == 'Admin' %}
+                                                <a>{{comment.writer.username|title}} | Admin <i class="bi bi-check-circle-fill"></i></a>
+                                            {% elif comment.writer.groups.all.0.name == 'Reader' and not comment.writer.groups.all.0.name == 'Admin' %}
+                                                <a href="{% url 'a_reader_profile' comment.writer.pk %}">
+                                                    {{comment.writer.username|title}}
+                                                </a>
+                                            {% elif comment.writer.groups.all.0.name == 'Writer' and not comment.writer.groups.all.0.name == 'Admin' %}
+                                                <a href="{% url 'a_writer_profile' comment.writer.pk %}">
+                                                    {{comment.writer.username|title}} | Writer <i class="bi bi-check-circle-fill"></i>
+                                                </a>
+                                            {% endif %}
+                                            <a href="{% url 'a_reply_comment' comment.pk %}" class="reply"><i class="bi bi-reply-fill"></i> Reply</a> <a href="{% url 'a_comment_update' comment.pk %}" class="reply"><i class="bi bi-pencil"></i> Edit</a> <a href="{% url 'a_comment_delete' comment.pk %}" class="reply"><i class="bi bi-trash"></i> Delete</a>
+                                        </h5>
+                                        <time datetime="{{comment.date_added}}">{{comment.date_added}}</time>
+                                        <p>{{comment.content}}</p>
+
+                                        {% if comment == comment_to_be_updated %}
+                                            <!-- Comment Form Section -->
+                                            <section id="comment-form" class="comment-form section">
+                                                <div class="container">
+
+                                                    <form method="POST">
+
+                                                        {% csrf_token %}
+                                                        {{ form.as_p }}
+
+                                                        <div class="text-center">
+                                                            <button type="submit" class="btn btn-primary">Update Comment</button>
+                                                        </div>
+
+                                                    </form>
+
+                                                </div>
+                                            </section><!-- /Comment Form Section -->
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% for reply in comment.children %}
+                                <div id="comment-reply-1" class="comment comment-reply">
+                                    <div class="d-flex">
+                                        <div class="comment-img">
+                                            {% if reply.writer.profile_picture %}
+                                                <img src="{{ reply.writer.profile_picture.url }}" alt="">
+                                            {% else %}
+                                                <i class="bi bi-person" style="font-size: 60px;"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <h5>
+                                                {% if reply.writer.groups.all.0.name == 'Admin' %}
+                                                    <a>{{reply.writer.username|title}} | Admin <i class="bi bi-check-circle-fill"></i></a>
+                                                {% elif reply.writer.groups.all.0.name == 'Reader' and not reply.writer.groups.all.0.name == 'Admin' %}
+                                                    <a href="{% url 'a_reader_profile' reply.writer.pk %}">{{reply.writer.username|title}}</a>
+                                                {% elif reply.writer.groups.all.0.name == 'Writer' and not reply.writer.groups.all.0.name == 'Admin' %}
+                                                    <a href="{% url 'a_writer_profile' reply.writer.pk %}">
+                                                        {{reply.writer.username|title}} | Writer <i class="bi bi-check-circle-fill"></i>
+                                                    </a>
+                                                {% endif %}
+                                                <a href="{% url 'a_reply_comment' comment.pk %}" class="reply"><i class="bi bi-reply-fill"></i> Reply</a> <a href="{% url 'a_comment_update' reply.pk %}" class="reply"><i class="bi bi-pencil"></i> Edit</a> <a href="{% url 'a_comment_delete' reply.pk %}" class="reply"><i class="bi bi-trash"></i> Delete</a>
+                                            </h5>
+                                            <time datetime="{{ reply.date_added }}">{{ reply.date_added }}</time>
+                                            <p>{{ reply.content }}</p>
+
+                                            {% if reply == comment_to_be_updated %}
+                                                <!-- Comment Form Section -->
+                                                <section id="comment-form" class="comment-form section">
+                                                    <div class="container">
+
+                                                        <form method="POST">
+
+                                                            {% csrf_token %}
+                                                            {{ form.as_p }}
+
+                                                            <div class="text-center">
+                                                                <button type="submit" class="btn btn-primary">Update Comment</button>
+                                                            </div>
+
+                                                        </form>
+
+                                                    </div>
+                                                </section><!-- /Comment Form Section -->
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div><!-- End comment reply #1-->
+                            {% endfor %}
+                        </div><!-- End comment #1-->
+                        {% if comment == comment_to_be_replied %}
+                            <div id="comment-reply-1" class="comment comment-reply">
+                                <div class="d-flex">
+                                    <!-- Comment Form Section -->
+                                    <section id="comment-form" class="comment-form section">
+                                        <div class="container">
+
+                                            <form method="POST">
+
+                                                {% csrf_token %}
+                                                {{ form.as_p }}
+
+                                                <div class="text-center">
+                                                    <button type="submit" class="btn btn-primary">Reply</button>
+                                                </div>
+
+                                            </form>
+
+                                        </div>
+                                    </section><!-- /Comment Form Section -->
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% empty %}
+                        <div id="comment-1" class="comment">
+                            <p>No Comment At The Moment</p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </section><!-- /Blog Comments Section -->
+
+            {% if not comment_to_be_updated %}
+                {% if not comment_to_be_replied %}
+                    <!-- Comment Form Section -->
+                    <section id="comment-form" class="comment-form section">
+                        <div class="container">
+
+                            <form method="POST">
+
+                                <h4>Post Comment</h4>
+
+                                {% csrf_token %}
+                                {{ form.as_p }}
+
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">Post Comment</button>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </section><!-- /Comment Form Section -->
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <div class="col-lg-4 sidebar">
+
+        <div class="widgets-container">
+
+            <!-- Blog Author Widget -->
+            <div class="blog-author-widget widget-item">
+
+                <div class="d-flex flex-column align-items-center">
+                    <div class="d-flex align-items-center w-100">
+                        {% if article.writer.profile_picture %}
+                            <img src="{{ article.writer.profile_picture.url }}" class="rounded-circle flex-shrink-0" alt="">
+                        {% else %}
+                            <i class="bi bi-person rounded-circle flex-shrink-0" style="font-size: 100px;"></i>
+                        {% endif %}
+                        <div style="text-align: center;">
+                            <h4>
+                                {% if article.writer.groups.first.name == 'Writer' %}
+                                    <a href="{% url 'a_writer_profile' article.writer.pk %}">{{ article.writer.username|title }}</a>
+                                {% elif article.writer.groups.first.name == 'Admin' %}
+                                    <a href="{% url 'a_admin_profile' article.writer.pk %}">{{ article.writer.username|title }}</a>
+                                {% endif %}
+                            </h4>
+                            <div class="social-links">
+                                {% if article.writer.website_link %}
+                                    <a href="{{article.writer.website_link}}"><i class="bi bi-house"></i></a>
+                                {% endif %}
+                                {% if article.writer.twitter_link %}
+                                    <a href="{{article.writer.twitter_link}}"><i class="bi bi-twitter-x"></i></a>
+                                {% endif %}
+                                {% if article.writer.facebook_link %}
+                                    <a href="{{article.writer.facebook_link}}"><i class="bi bi-facebook"></i></a>
+                                {% endif %}
+                                {% if article.writer.instagram_link %}
+                                    <a href="{{article.writer.instagram_link}}"><i class="biu bi-instagram"></i></a>
+                                {% endif %}
+                                {% if article.writer.linkedin_link %}
+                                    <a href="{{article.writer.linkedin_link}}"><i class="biu bi-linkedin"></i></a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <p>{{ article.writer.bio }}</p>
+
+                </div>
+
+            </div><!--/Blog Author Widget -->
+
+            <!-- Recent Posts Widget -->
+            <div class="recent-posts-widget widget-item">
+
+                <h3 class="widget-title">Recent Posts From {{ article.writer.username|title }}</h3>
+
+                    {% for post in recent_posts %}
+                        <div class="post-item">
+                            <img src="{{ post.image.url }}" alt="" class="flex-shrink-0">
+                            <div>
+                                <h4><a href="{% url 'a_article_detail' post.pk %}">{{ post.title }}</a></h4>
+                                <time datetime="{{post.date_added}}">{{post.date_added}}</time>
+                            </div>
+                        </div><!-- End recent post item-->
+                    {% endfor %}
+            </div><!--/Recent Posts Widget -->
+
+            <!-- Tags Widget -->
+            <div class="tags-widget widget-item">
+
+                <h3 class="widget-title">This Article's Category</h3>
+                <ul>
+                    {% for category in article.category.all %}
+                        <li><a href="{% url 'a_article_category_list' category.name %}">{{ category.name }}</a></li>
+                    {% endfor %}
+                </ul>
+
+            </div><!--/Tags Widget -->
+
+        </div>
+
+    </div>
+
+    </div>
+</div>
+
+{% endblock %}

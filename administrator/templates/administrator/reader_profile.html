@@ -1,0 +1,188 @@
+{% extends 'administrator/base.html' %}
+
+{% block content %}
+
+<head>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+
+<!-- Page Title -->
+<div class="page-title">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+    <h1 class="mb-2 mb-lg-0">
+        {{user.username|title}}'s Profile
+    </h1>
+    <nav class="breadcrumbs">
+        <ol>
+            <li><a href="{% url 'admin_home' %}">Home</a></li>
+            <li class="current">
+                <a href="{% url 'a_reader_profile' user.pk %}">{{user.username|title}}'s Profile</a>
+            </li>
+            <li><a href="{% url 'a_reader_update' user.pk %}">Edit Profile</a></li>
+            <li><a href="{% url 'a_reader_delete' user.pk %}">Delete User</a></li>
+        </ol>
+    </nav>
+    </div>
+</div><!-- End Page Title -->
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-lg-4 sidebar">
+
+            <div class="widgets-container">
+
+                <!-- Blog Author Widget 2 -->
+                <div class="blog-author-widget-2 widget-item">
+
+                    <div class="d-flex flex-column align-items-center">
+                        <i class="bi bi-person rounded-circle flex-shrink-0" style="font-size: 100px;"></i>
+                        <h4>{{ user.username|title }}</h4>
+                        <p>Email: <a href="mailto:{{user.email}}">{{user.email}}</a></p>
+                        <p>Role: {{user.role}}</p>
+                    </div>
+
+                </div><!--/Blog Author Widget 2 -->
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-8">
+            <br>
+            <!-- Section Title -->
+            <div class="section-title" data-aos="fade-up">
+                <div class="section-title-container d-flex align-items-center justify-content-between">
+                <h4>
+                    {{user.username|title}}'s Activity Log
+                </h4>
+                </div>
+            </div><!-- End Section Title -->
+
+            {% if logs %}
+                <!-- Blog Posts Section -->
+                <section id="blog-posts" class="blog-posts section" data-aos="fade-up">
+
+                    <div class="container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in logs %}
+                                <tr>
+                                    <td>
+                                        {{ log.user.username }}
+                                    </td>
+                                    <td>{{ log.action }}</td>
+                                    <td>{{ log.date }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Blog Pagination Section -->
+                <section id="blog-pagination" class="blog-pagination section">
+
+                <div class="container">
+                    <div class="d-flex justify-content-center">
+                    <ul>
+
+                        {% if logs.has_previous %}
+                        <li>
+                            <a href="?q={{ search_query }}&page={{ logs.previous_page_number }}">
+                            <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% if logs.paginator.num_pages > 1 %}
+                        <li>
+                            {% if logs.number == 1 %}
+                            <a href="?q={{ search_query }}&page=1" class="active">1</a>
+                            {% else %}
+                            <a href="?q={{ search_query }}&page=1">1</a>
+                            {% endif %}
+                        </li>
+                        {% endif %}
+
+                        {% if logs.number > 4 %}
+                        <li>...</li>
+                        {% endif %}
+
+                        {% for num in logs.paginator.page_range %}
+                        {% if num > 1 and num < logs.paginator.num_pages %}
+                            {% if num >= logs.number|add:"-2" and num <= logs.number|add:"2" %}
+                            <li>
+                                {% if logs.number == num %}
+                                <a href="?q={{ search_query }}&page={{ num }}" class="active">{{ num }}</a>
+                                {% else %}
+                                <a href="?q={{ search_query }}&page={{ num }}">{{ num }}</a>
+                                {% endif %}
+                            </li>
+                            {% endif %}
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if logs.number < logs.paginator.num_pages|add:"-3" %}
+                        <li>...</li>
+                        {% endif %}
+
+                        {% if logs.paginator.num_pages > 1 %}
+                        <li>
+                            {% if logs.number == logs.paginator.num_pages %}
+                            <a href="?q={{ search_query }}&page={{ logs.paginator.num_pages }}" class="active">{{ logs.paginator.num_pages }}</a>
+                            {% else %}
+                            <a href="?q={{ search_query }}&page={{ logs.paginator.num_pages }}">{{ logs.paginator.num_pages }}</a>
+                            {% endif %}
+                        </li>
+                        {% endif %}
+
+                        {% if logs.has_next %}
+                        <li>
+                            <a href="?q={{ search_query }}&page={{ logs.next_page_number }}">
+                            <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                    </div>
+                </div>
+
+                </section><!-- /Blog Pagination Section -->
+
+            {% else %}
+                <p>No Log Found</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

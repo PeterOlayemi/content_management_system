@@ -1,0 +1,42 @@
+{% extends 'administrator/base.html' %}
+
+{% block content %}
+
+<!-- Page Title -->
+<div class="page-title position-relative">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">Users Who Liked This Article ({{number_of_likes}})</h1>
+        <nav class="breadcrumbs">
+            <ol>
+                <li><a href="{% url 'admin_home' %}">Home</a></li>
+                <li><a href="{% url 'a_manage_article' %}">Manage Articles</a></li>
+                <li><a href="{% url 'a_article_detail' article.pk %}">Article Detail</a></li>
+                <li class="current">Users Who Liked This Article</li>
+            </ol>
+        </nav>
+    </div>
+</div><!-- End Page Title -->
+
+<div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row justify-content-center mt-5">
+        <div>
+            <ul>
+                {% for user in users %}
+                    <li>
+                        {% if user.groups.first.name == 'Reader' %}
+                            <a href="{% url 'a_reader_profile' user.pk %}">{{ user.username|title }}</a>
+                        {% elif user.groups.first.name == 'Writer' %}
+                            <a href="{% url 'a_writer_profile' user.pk %}">{{ user.username|title }} | Writer <i class="bi bi-check-circle-fill"></i></a>
+                        {% elif user.groups.first.name == 'Admin' %}
+                            <a href="{% url 'a_admin_profile' user.pk %}">{{ user.username|title }} | Admin <i class="bi bi-check-circle-fill"></i> {% if request.user == user %}(You){% endif %}</a>
+                        {% endif %}
+                    </li>
+                {% empty %}
+                    <li>No user has liked this article yet</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

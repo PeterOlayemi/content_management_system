@@ -1,0 +1,17 @@
+Dear {{ user.username }},
+
+
+You are on the track of completing your registration as a {{user.role}} in ByteWrite.
+To activate your account, click the link below or paste it in your browser.
+
+http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+
+
+This message was sent to {{user.email}} because you have started our registration process.
+If you did not make this request, you can simply ignore this email.
+
+
+Best Regards,
+Admin
+{{user.date_joined.date}}
+ 

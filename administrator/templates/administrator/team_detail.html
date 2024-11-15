@@ -1,0 +1,61 @@
+{% extends 'administrator/base.html' %}
+
+{% block content %}
+<!-- Page Title -->
+<div class="page-title">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+    <h1 class="mb-2 mb-lg-0">
+        Team Member Detail
+    </h1>
+    <nav class="breadcrumbs">
+        <ol>
+            <li><a href="{% url 'admin_home' %}">Home</a></li>
+            <li><a href="{% url 'a_manage_team' %}">Manage Team</a></li>
+            <li class="current">Team Member Detail</li>
+            <li><a href="{% url 'a_team_update' team.pk %}">Edit</a></li>
+            <li><a href="{% url 'a_team_delete' team.pk %}">Delete</a></li>
+        </ol>
+    </nav>
+    </div>
+</div><!-- End Page Title -->
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-lg-4">
+
+            <div class="widgets-container">
+
+                <!-- Blog Author Widget 2 -->
+                <div class="blog-author-widget-2 widget-item">
+
+                    <div class="d-flex flex-column align-items-center">
+                        <img src="{{ team.image.url }}" class="rounded-circle flex-shrink-0" alt="">
+                        <h4>{{ team.full_name|title }}</h4>
+                        <p>Role: {{ team.role }}</p>
+                        <p>Bio: {{ team.bio }}</p>
+                        <div class="social-links">
+                            {% if team.twitter_link %}
+                                <a href="{{team.twitter_link}}"><i class="bi bi-twitter-x"></i></a>
+                            {% endif %}
+                            {% if team.facebook_link %}
+                                <a href="{{team.facebook_link}}"><i class="bi bi-facebook"></i></a>
+                            {% endif %}
+                            {% if team.instagram_link %}
+                                <a href="{{team.instagram_link}}"><i class="biu bi-instagram"></i></a>
+                            {% endif %}
+                            {% if team.linkedin_link %}
+                                <a href="{{team.linkedin_link}}"><i class="biu bi-linkedin"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div><!--/Blog Author Widget 2 -->
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends 'administrator/base.html' %}
+
+{% block content %}
+<head>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Page Title -->
+<div class="page-title">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+    <h1 class="mb-2 mb-lg-0">
+        Manage Logs{% if search_query %} - Results For {{search_query}}{% endif %}
+    </h1>
+    <nav class="breadcrumbs">
+        <ol>
+            <li><a href="{% url 'admin_home' %}">Home</a></li>
+            <li class="current">Manage Logs</li>
+        </ol>
+    </nav>
+    </div>
+</div><!-- End Page Title -->
+
+<!-- Search Widget -->
+<div class="container search-widget widget-item">
+
+  <h3 class="widget-title">Search</h3>
+  <form method="get">
+    <input type="text" name="q" value="{{ search_query }}" placeholder="Search User/Action">
+    <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+  </form>
+
+</div><!--/Search Widget -->
+
+<div class="container">
+    {% if logs %}
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Action</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+                <tr>
+                    <td>
+                        {% if log.user %}
+                            {% if log.user.groups.first.name == 'Reader' %}
+                                <a href="{% url 'a_reader_profile' log.user.pk %}">{{ log.user.username }}</a>
+                            {% elif log.user.groups.first.name == 'Writer' %}
+                                <a href="{% url 'a_writer_profile' log.user.pk %}">{{ log.user.username }}</a>
+                            {% elif log.user.groups.first.name == 'Admin' %}
+                                <a href="{% url 'a_admin_profile' log.user.pk %}">{{ log.user.username }}</a>
+                            {% endif %}
+                        {% else %}
+                            Deleted User
+                        {% endif %}
+                    </td>
+                    <td>{{ log.action }}</td>
+                    <td>{{ log.date }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>No log found</p>
+    {% endif %}
+</div>
+
+<!-- Blog Pagination Section -->
+<section id="blog-pagination" class="blog-pagination section">
+
+  <div class="container">
+    <div class="d-flex justify-content-center">
+      <ul>
+
+        {% if logs.has_previous %}
+          <li>
+            <a href="?q={{ search_query }}&page={{ logs.previous_page_number }}">
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          </li>
+        {% endif %}
+
+        {% if logs.paginator.num_pages > 1 %}
+          <li>
+            {% if logs.number == 1 %}
+              <a href="?q={{ search_query }}&page=1" class="active">1</a>
+            {% else %}
+              <a href="?q={{ search_query }}&page=1">1</a>
+            {% endif %}
+          </li>
+        {% endif %}
+
+        {% if logs.number > 4 %}
+          <li>...</li>
+        {% endif %}
+
+        {% for num in logs.paginator.page_range %}
+          {% if num > 1 and num < logs.paginator.num_pages %}
+            {% if num >= logs.number|add:"-2" and num <= logs.number|add:"2" %}
+              <li>
+                {% if logs.number == num %}
+                  <a href="?q={{ search_query }}&page={{ num }}" class="active">{{ num }}</a>
+                {% else %}
+                  <a href="?q={{ search_query }}&page={{ num }}">{{ num }}</a>
+                {% endif %}
+              </li>
+            {% endif %}
+        {% endif %}
+        {% endfor %}
+
+        {% if logs.number < logs.paginator.num_pages|add:"-3" %}
+          <li>...</li>
+        {% endif %}
+
+        {% if logs.paginator.num_pages > 1 %}
+          <li>
+            {% if logs.number == logs.paginator.num_pages %}
+              <a href="?q={{ search_query }}&page={{ logs.paginator.num_pages }}" class="active">{{ logs.paginator.num_pages }}</a>
+            {% else %}
+              <a href="?q={{ search_query }}&page={{ logs.paginator.num_pages }}">{{ logs.paginator.num_pages }}</a>
+            {% endif %}
+          </li>
+        {% endif %}
+
+        {% if logs.has_next %}
+          <li>
+            <a href="?q={{ search_query }}&page={{ logs.next_page_number }}">
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+
+</section><!-- /Blog Pagination Section -->
+</body>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'reader/base.html' %}
+
+{% block content %}
+
+<!-- Page Title -->
+<div class="page-title">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+    <h1 class="mb-2 mb-lg-0">
+        {% if user == request.user %}
+            My Profile
+        {% else %}
+            {{user.username|title}}'s Profile
+        {% endif %}
+    </h1>
+    <nav class="breadcrumbs">
+        <ol>
+            <li><a href="{% url 'reader_home' %}">Home</a></li>
+            <li class="current">
+                {% if user == request.user %}
+                    <a href="{% url 'reader_profile' user.pk %}">My Profile</a>
+                {% else %}
+                    <a href="{% url 'reader_profile' user.pk %}">{{user.username|title}}'s Profile</a>
+                {% endif %}
+            </li>
+            {% if user == request.user %}
+                <li><a href="{% url 'reader_update' %}">Edit Profile</a></li>
+                <li><a href="{% url 'reader_change_password' %}">Change Password</a></li>
+            {% endif %}
+        </ol>
+    </nav>
+    </div>
+</div><!-- End Page Title -->
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-lg-4 sidebar">
+
+            <div class="widgets-container">
+
+                <!-- Blog Author Widget 2 -->
+                <div class="blog-author-widget-2 widget-item">
+
+                    <div class="d-flex flex-column align-items-center">
+                        <i class="bi bi-person rounded-circle flex-shrink-0" style="font-size: 100px;"></i>
+                        <h4>{{ user.username|title }}</h4>
+                        <p>Email: <a href="mailto:{{user.email}}">{{user.email}}</a></p>
+                        <p>Role: {{user.role}}</p>
+                    </div>
+
+                </div><!--/Blog Author Widget 2 -->
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

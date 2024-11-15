@@ -1,0 +1,46 @@
+{% extends 'administrator/base.html' %}
+
+{% block content %}
+
+<!-- Page Title -->
+<div class="page-title position-relative">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+        <h1 class="mb-2 mb-lg-0">Edit Category</h1>
+        <nav class="breadcrumbs">
+            <ol>
+                <li><a href="{% url 'admin_home' %}">Home</a></li>
+                <li><a href="{% url 'a_manage_category' %}">Manage Categories</a></li>
+                <li><a href="{% url 'a_article_category_list' category.name %}">Category Detail</a></li>
+                <li class="current">Edit Category</li>
+                <li><a href="{% url 'a_category_delete' category.pk %}">Delete Category</a></li>
+            </ol>
+        </nav>
+    </div>
+</div><!-- End Page Title -->
+
+<div class="container" data-aos="fade-up" data-aos-delay="100">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label"><b>{{ field.label }}:</b></label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="text-danger">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div style="text-align: right;"><button type="submit" class="btn btn-primary">Update</button></div>
+            </form><br><br>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
