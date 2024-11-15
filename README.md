@@ -90,6 +90,7 @@ content_management_system/
 ├── reader/
 ├── static/
 ├── writer/
+├── .gitignore
 ├── LICENSE
 ├── manage.py
 ├── README.md
